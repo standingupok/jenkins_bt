@@ -49,7 +49,7 @@ pipeline {
     }
     post {
         always {
-            sh 'rm -rf $VENV' // Cleanup virtual environment
+            sh 'rm -rf $VENVa' // Cleanup virtual environment
         }
     }
 }
