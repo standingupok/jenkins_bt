@@ -1,16 +1,20 @@
 pipeline {
     agent any
     environment {
-        VENV = 'venv' // Define a variable for the virtual environment directory
+        VENV = 'venv' // Define virtual environment directory
     }
-    
     stages {
         stage('Setup Environment') {
             steps {
-                sh '''
-                sudo apt update
-                sudo apt install -y python3-venv
-                '''
+                script {
+                    def password = credentials('sudo-jenkins-password')
+                    withCredentials([string(credentialsId: 'sudo-jenkins-password', variable: 'SUDO_PASSWORD')]) {
+                        sh """
+                        echo $SUDO_PASSWORD | sudo -S apt update
+                        sudo apt install python3-venv
+                        """
+                    }
+                }
             }
         }
         stage('Checkout Code') {
@@ -21,17 +25,17 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh '''
-                python3 -m venv $VENV         # Create a virtual environment
-                source $VENV/bin/activate     # Activate the virtual environment
-                pip install --upgrade pip     # Upgrade pip
-                pip install -r requirements.txt  # Install dependencies
+                python3 -m venv $VENV          # Create virtual environment
+                source $VENV/bin/activate      # Activate virtual environment
+                pip install --upgrade pip      # Upgrade pip
+                pip install -r requirements.txt # Install dependencies
                 '''
             }
         }
         stage('Run Application') {
             steps {
                 sh '''
-                source $VENV/bin/activate     # Activate the virtual environment
+                source $VENV/bin/activate
                 uvicorn main:app --host 127.0.0.1 --port 8000 &
                 '''
             }
@@ -39,7 +43,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh '''
-                source $VENV/bin/activate     # Activate the virtual environment
+                source $VENV/bin/activate
                 pytest test_app.py --maxfail=1 --disable-warnings
                 '''
             }
@@ -47,7 +51,7 @@ pipeline {
     }
     post {
         always {
-            sh 'rm -rf $VENV'  // Cleanup the virtual environment after pipeline execution
+            sh 'rm -rf $VENV' // Cleanup virtual environment
         }
     }
 }
