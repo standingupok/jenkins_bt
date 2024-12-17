@@ -28,6 +28,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 echo 'Running tests...'
+                sh './venv/bin/pip install httpx'
                 sh './${VENV_DIR}/bin/pip install pytest'
                 sh './${VENV_DIR}/bin/pytest test_main.py'
             }
