@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone repository') {
+            steps {
+                git branch: 'main', url: 'https://github.com/your-username/your-repo.git'
+            }
+        }
+        
+        stage('Install dependencies') {
+            steps {
+                sh 'pip install -r requirements.txt'
+            }
+        }
+
+        stage('Start Flask Application') {
+            steps {
+                sh 'nohup python app.py > app.log 2>&1 &'
+            }
+        }
+
+        stage('Run Test Cases') {
+            steps {
+                sh 'pytest test_app.py --disable-warnings'
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: '**/*.log', allowEmptyArchive: true
+        }
+        success {
+            githubChecksContext('CI Success')
+        }
+        failure {
+            githubChecksContext('CI Failure')
+        }
+    }
+}
