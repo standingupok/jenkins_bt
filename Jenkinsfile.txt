@@ -1,45 +1,24 @@
 pipeline {
     agent any
-
     stages {
-        stage('Clone repository') {
+        stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/standingupok/jenkins_bt.git'
+                git 'https://github.com/your-repo-url.git'
             }
         }
-        
-        stage('Install dependencies') {
+        stage('Install Dependencies') {
             steps {
-                sh 'python3 -m pip install --upgrade pip'
-                sh 'python3 -m pip install -r requirements.txt'
+                sh 'pip install -r requirements.txt'
             }
         }
-
-        stage('Start Flask Application') {
+        stage('Run Application') {
             steps {
-                sh 'nohup python3 app.py > app.log 2>&1 &'
+                sh 'uvicorn main:app --host 127.0.0.1 --port 8000 &'
             }
         }
-
-        stage('Run Test Cases') {
+        stage('Run Tests') {
             steps {
-                sh 'pytest test_app.py --disable-warnings'
-            }
-        }
-    }
-
-    post {
-        always {
-            archiveArtifacts artifacts: '**/*.log', allowEmptyArchive: true
-        }
-        success {
-            script {
-                echo "CI Pipeline succeeded!"
-            }
-        }
-        failure {
-            script {
-                echo "CI Pipeline failed!"
+                sh 'pytest test_app.py --maxfail=1 --disable-warnings'
             }
         }
     }
