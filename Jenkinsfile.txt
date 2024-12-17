@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/standingupok/jenkins_bt.git'
+                git branch: 'main', url: 'https://github.com/standingupok/jenkins_bt.git'
             }
         }
         stage('Install Dependencies') {
