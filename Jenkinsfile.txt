@@ -3,7 +3,16 @@ pipeline {
     environment {
         VENV = 'venv' // Define a variable for the virtual environment directory
     }
+    
     stages {
+        stage('Setup Environment') {
+            steps {
+                sh '''
+                sudo apt update
+                sudo apt install -y python3-venv
+                '''
+            }
+        }
         stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/standingupok/jenkins_bt.git'
