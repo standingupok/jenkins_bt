@@ -10,13 +10,14 @@ pipeline {
         
         stage('Install dependencies') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh 'python3 -m pip install --upgrade pip'
+                sh 'python3 -m pip install -r requirements.txt'
             }
         }
 
         stage('Start Flask Application') {
             steps {
-                sh 'nohup python app.py > app.log 2>&1 &'
+                sh 'nohup python3 app.py > app.log 2>&1 &'
             }
         }
 
@@ -32,10 +33,14 @@ pipeline {
             archiveArtifacts artifacts: '**/*.log', allowEmptyArchive: true
         }
         success {
-            githubChecksContext('CI Success')
+            script {
+                echo "CI Pipeline succeeded!"
+            }
         }
         failure {
-            githubChecksContext('CI Failure')
+            script {
+                echo "CI Pipeline failed!"
+            }
         }
     }
 }
