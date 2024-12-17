@@ -9,8 +9,8 @@ pipeline {
                 script {
                     def password = credentials('sudo-jenkins-password')
                     sh """
-                    echo $password | sudo -S apt update
-                    sudo apt install python3-venv
+                        echo $password | sudo -S apt update
+                        sudo apt install python3-venv
                     """
                 }
             }
