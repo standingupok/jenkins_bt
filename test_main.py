@@ -3,7 +3,7 @@ from main import app
 
 client = TestClient(app)
 
-# Test for get_version endpoint
+# Test for get_version endpoints
 def test_get_version():
     response = client.get("/get_version")
     assert response.status_code == 200
