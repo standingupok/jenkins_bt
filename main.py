@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 import math
 
-# ap:))
+# api:D
 app = FastAPI()
 
 @app.get("/get_version")
